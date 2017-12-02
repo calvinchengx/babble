@@ -66,11 +66,15 @@ func TestTLSTransport_EnvironCert(t *testing.T) {
 	test := NewTest(t)
 	timeout := 5 * time.Second
 	serverName := "node1.babble.net"
+
+	// this lets our test pass on Darwin but changes the original intent of the test, which is not what we want
+	// it is here on a temporary basis
 	pool := caPool(test.readFile("ca.crt"))
 
 	err := os.Setenv("SSL_CERT_FILE", filepath.Join(test.testdata, "ca.crt"))
 	test.assert.Nil(err, "setting CERT FILE environment variable")
 
+	// pool should be nil. temporary fix to let test run successfully on Darwin
 	server := test.transport(test.tlsConfig(serverName, "signed1", pool), timeout)
 	client := test.transport(test.tlsConfig(serverName, "signed2", pool), timeout)
 
